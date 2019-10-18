@@ -6,6 +6,10 @@ import time
 
 from docopt import docopt
 from enoslib.api import run_ansible as enos_run_ansible
+from enoslib.api import run_command, wait_ssh
+from enoslib.infra.enos_g5k.provider import G5k
+from enoslib.infra.enos_g5k.configuration import Configuration, NetworkConfiguration
+
 from enoslib.task import enostask
 
 
@@ -74,8 +78,8 @@ from enoslib.infra.enos_g5k.provider import G5k
 def g5k_deploy(g5k_config, env=None, force_deploy=False, **kwargs):
     provider = G5k(g5k_config)
     roles, networks = provider.init(force_deploy=force_deploy)
+    wait_ssh(roles)
     env['roles'] = roles
     env['networks'] = networks
     logging.info('Wait 30 seconds for iface to be ready...')
-    time.sleep(30)
     return env
