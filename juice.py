@@ -121,11 +121,12 @@ Options:
         generate_inventory(env['roles'] , env['networks'],
                            env['inventory'], check_networks=True)
         _save_env(env)
+        print(env_['inventory'])
 
 
     # Deploy the resources, requires both g5k and inventory executions
     if 'scaffold' in tags:
-        run_ansible('scaffolding.yml', extra_vars={
+        run_ansible('tasks.yml', extra_vars={
             'registry':    config['registry'],
             'db':          env['db'],
             'monitoring':  env['monitoring'],

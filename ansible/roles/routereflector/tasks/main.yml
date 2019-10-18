@@ -1,0 +1,19 @@
+---
+- name: Check the IP address of the machines
+  register: ip_eno1
+  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
+  ignore_errors: true
+
+- name: Add GoBGP config file for route reflectors
+  template:
+    src: gobgpr.tpl
+    dest: /home/gobgp.conf
+
+- name: Install Packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - golang-github-osrg-gobgp-dev
+    - gobgpd
+

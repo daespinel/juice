@@ -1,0 +1,43 @@
+---
+
+#### TASKS for the distributed module
+
+- name: Download DIMINET code                
+  git:
+    dest: /opt/stack/intersite           
+    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/intersite.git"
+    version: master                 
+    force: yes
+    update: no
+    depth: 1
+  become: true
+
+- name: Install the DIMINET pip requirements
+  pip:
+    executable: pip3        
+    requirements: requirements.txt
+  become: true
+  ignore_errors: false
+  args:
+    chdir: /opt/stack/intersite/
+
+- name: Copy the file for service.config init
+  template:
+    src: services.config.tpl
+    dest: /opt/stack/intersite/config/services.config
+  become: true
+
+- name: Copy the systemd unit service file for DIMINET daemon
+  template:
+    src: intersite-service.tpl
+    dest: /etc/systemd/system/intersite.service
+  become: true
+
+- name: Reload daemons
+  shell: systemctl daemon-reload     
+  become: true
+
+- name: Start DIMINET daemon 
+  shell: systemctl restart intersite
+  become: true
+

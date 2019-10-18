@@ -1,0 +1,40 @@
+---
+- name: Gather facts from hosts
+  hosts: all
+  gather_facts: true
+
+- name: Doing common tasks
+  hosts: routers, openstack
+  roles:
+   - { role: common,
+       tags: common }
+
+- name: Deploying route reflectors
+  hosts: routereflector
+  roles:
+    - { role: routereflector,
+        tags: routereflector }
+
+- name: Deploying route clients
+  hosts: routeclient
+  roles:
+    - { role: routeclient,
+        tags: routeclient }
+
+- name: Deploying openstack
+  hosts: openstack
+  roles:
+    - { role: openstack,
+        tags: openstack }
+
+- name: Starting all routers
+  hosts: routers
+  roles:
+    - { role: routers,
+        tags: routers }
+
+- name: Starting DIMINET modules
+  hosts: modules
+  roles:
+    - { role: modules,
+        tags: modules }

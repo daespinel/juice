@@ -1,0 +1,19 @@
+---
+
+- name: Copy service daemon file
+  template:
+    src: gobgp-service.tpl
+    dest: /etc/systemd/system/gobgpd.service
+  become: true
+
+- name: Reload daemons
+  shell: systemctl daemon-reload     
+  become: true
+
+- name: Start GoBGP daemon 
+  shell: systemctl restart gobgpd
+  become: true
+
+
+
+

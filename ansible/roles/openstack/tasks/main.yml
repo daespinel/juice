@@ -1,2 +1,183 @@
 ---
-- include: "{{ enos_action }}.yml"
+- name: Installing open-vswitch service
+  apt: 
+    name: openvswitch-switch
+  become: true
+ 
+- name: Check the IP address of the machines
+  register: ip_eno1
+  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
+  ignore_errors: true
+
+- name: Add stack user
+  user:
+    name: stack
+    shell: /bin/bash
+    home: /opt/stack
+    system: yes
+
+- name: Make stack user a sudoer
+  lineinfile:
+    dest: /etc/sudoers.d/stack
+    line: "stack ALL=(ALL) NOPASSWD: ALL"
+    create: yes
+
+- name: Download Devstack Stein
+  git:
+    dest: /opt/stack/devstack
+    repo: https://git.openstack.org/openstack-dev/devstack
+    version: stable/stein
+    force: yes
+    update: no
+    depth: 1
+  become: true
+  become_user: stack
+
+- name: Download Neutron Interconnections
+  git:
+    dest: /opt/stack/interco
+    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git"
+    version: master
+    force: yes
+    update: no
+    depth: 1
+  become: true
+  become_user: stack
+
+- name: Installing the Interconnections Service plugin
+  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
+  ignore_errors: true
+  args: 
+    chdir: /opt/stack/interco/
+  become: true
+
+- name: Create the devstack local.conf
+  template:
+    src: local.conf.tpl
+    dest: /opt/stack/devstack/local.conf
+    owner: stack
+  become: true
+  become_user: stack
+
+- name: Adding the br-mpls bridge
+  shell: ovs-vsctl add-br br-mpls
+  become: true
+  ignore_errors: true
+
+- name: Copy the modified neutron-lib file to the deployment
+  template:
+    src: interconnection.py.tpl
+    dest: /opt/stack/interconnection.py
+    owner: stack
+  become: true
+  become_user: stack
+
+- name: Modify neutron stack script to add new file for neutron-lib neutron
+  template:
+    src: neutron.tpl
+    dest: /opt/stack/devstack/lib/neutron
+    owner: stack
+  become: true
+  become_user: stack
+
+- name: Modify neutron stack script to add new file for neutron-lib neutron-legacy
+  template:
+    src: neutron-legacy.tpl
+    dest: /opt/stack/devstack/lib/neutron-legacy
+    owner: stack
+  become: true
+  become_user: stack
+
+- name: Follow Devstack deployment
+  debug:
+    msg: 
+      - "Follow deployment with: "
+      - "ssh -l root {{ip_eno1.stdout}} tail -f /tmp/stack-logs"
+
+- name: Run First Devstack
+  shell: /opt/stack/devstack/stack.sh &> /tmp/stack-logs
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: stack
+  register: result
+  until: result is succeeded
+  retries: 1
+  when: regionName == 'RegionOne'
+
+- name: Run parallel Devstack
+  shell: /opt/stack/devstack/stack.sh &> /tmp/stack-logs
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: stack
+  register: result
+  until: result is succeeded
+  retries: 1
+  async: 2000
+  poll: 30
+  when: regionName != 'RegionOne'
+
+- name: Create a directory for neutron python client openstack client
+  file:
+    path: /usr/local/lib/python2.7/dist-packages/neutronclient/osc/v2/neutron_interconnection
+    state: directory
+    mode: '0755'
+
+- name: Download Neutron python-neutronclient
+  git:
+    dest: /opt/stack/python-neutronclient
+    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/python-neutronclient.git"
+    version: neutron-interconnection
+    force: yes
+    update: no
+    depth: 1
+  become: true
+  become_user: stack
+
+- name: Uninstall former python-neutronclient pip package for python2
+  pip:
+    name: python-neutronclient
+    state: absent
+
+- name: Uninstall former python-neutronclient pip package for python3
+  pip:
+    executable: pip3
+    name: python-neutronclient
+    state: absent
+
+- name: Install the new python client
+  shell: python /opt/stack/python-neutronclient/setup.py install
+  become: true
+  ignore_errors: false
+  args:
+    chdir: /opt/stack/python-neutronclient/
+
+- name: Install the new python client for python3
+  shell: python3 /opt/stack/python-neutronclient/setup.py install
+  become: true
+  ignore_errors: false
+  args:
+    chdir: /opt/stack/python-neutronclient/
+
+
+
+### pip delete the old neutronclient client package, that's the fucking problem!!!
+
+
+## Will need to do git pull the python-client library and then do python setup.py install to see if it works
+
+#- name: Copy the modified neutron-client folder to the deployment
+#  copy:
+#    src: templates/python-neutronclient
+#    dest: /usr/local/lib/python2.7/dist-packages/
+#    force: yes
+#  become: true
+
+# Problem with nano /usr/local/lib/python2.7/dist-packages/neutron_lib/api/definitions/interconnection.py, the valid states are not defined
+
+#- name: Upgrade Neutron heads
+#  shell: neutron-db-manage --subproject neutron-interconnection upgrade heads
+#  become: true
+#  become_user: stack
+#  ignore_errors: false

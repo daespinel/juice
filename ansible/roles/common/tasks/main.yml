@@ -1,2 +1,30 @@
 ---
-- include: "{{ enos_action }}.yml"
+- name: Show facts
+  debug: var=hostvars[inventory_hostname].ansible_eno1.ipv4.address
+
+- name: Update apt-cache
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Force dpkg lock
+  shell: rm /var/lib/dpkg/lock-frontend
+  ignore_errors: true
+  become: true
+
+- name: Force reconfigure
+  shell: dpkg --configure -a
+  ignore_errors: true
+  become: true
+
+
+- name: Install some Packages
+  apt:
+    name: "{{ packages }}"
+  become: true
+  vars:
+    packages:
+      - git
+      - python-pip
+      - python3-pip
+
