@@ -48,7 +48,7 @@
 
 [[neighbors]]
   [neighbors.config]
-     neighbor-address = "10{{hostvars[groups['routeclient'][clients]].ansible_eno1.ipv4.address[3:]}}" # First routeclient address
+     neighbor-address = "{{hostvars[groups['routeclient'][clients]].ansible_eno2.ipv4.address}}" # First routeclient address
      peer-as = 64512
   [neighbors.transport.config]
      passive-mode = true
@@ -71,7 +71,7 @@
 
 [[neighbors]]
   [neighbors.config]
-     neighbor-address = "10{{hostvars[groups['routeclient'][clients+1]].ansible_eno1.ipv4.address[3:]}}" # Second routeclient address
+     neighbor-address = "{{hostvars[groups['routeclient'][clients+1]].ansible_eno1.ipv4.address}}" # Second routeclient address
      peer-as = 64512
   [neighbors.transport.config]
      passive-mode = true

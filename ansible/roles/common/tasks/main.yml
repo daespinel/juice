@@ -6,6 +6,10 @@
   apt:
     update_cache: yes
   become: true
+  become_user: root
+  register: result
+  until: result is succeeded
+  retries: 20
 
 - name: Force dpkg lock
   shell: rm /var/lib/dpkg/lock-frontend
@@ -22,6 +26,9 @@
   apt:
     name: "{{ packages }}"
   become: true
+  register: installation
+  until: installation is succeeded
+  retries: 30
   vars:
     packages:
       - git

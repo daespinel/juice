@@ -4,10 +4,10 @@
   shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- | head -n 1
   ignore_errors: true
 
-- name: Add a second IP address to the network interface for the routeclient
-  shell: ip address add 10{{ansible_eno1.ipv4.address[3:]}}/24 dev eno1
-  ignore_errors: true
-  become: true
+#- name: Add a second IP address to the network interface for the routeclient
+#  shell: ip address add 10{{ansible_eno1.ipv4.address[3:]}}/24 dev eno1
+#  ignore_errors: true
+#  become: true
     
 - name: Add GoBGP config file for route clients
   template:

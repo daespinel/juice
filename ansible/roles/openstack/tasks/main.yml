@@ -3,7 +3,7 @@
   apt: 
     name: openvswitch-switch
   become: true
- 
+
 - name: Check the IP address of the machines
   register: ip_eno1
   shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
@@ -32,6 +32,16 @@
     depth: 1
   become: true
   become_user: stack
+
+- name: Unstack action
+  shell: /opt/stack/devstack/unstack.sh &> /tmp/unstack-logs
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: stack
+  register: result
+  until: result is succeeded
+  retries: 1
 
 - name: Download Neutron Interconnections
   git:

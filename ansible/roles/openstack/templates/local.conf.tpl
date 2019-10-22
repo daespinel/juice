@@ -38,7 +38,7 @@ NETWORKING_BGPVPN_DRIVER="BGPVPN:BaGPipe:networking_bgpvpn.neutron.services.serv
 enable_service b-bgp
 #BAGPIPE_DATAPLANE_DRIVER_IPVPN=ovs
 BAGPIPE_DATAPLANE_DRIVER_EVPN=ovs
-BAGPIPE_BGP_PEERS=10{{ansible_eno1.ipv4.address[3:]}}
+BAGPIPE_BGP_PEERS={{ansible_eno2.ipv4.address}}
 BAGPIPE_API_HOST=localhost
 
 disable_service c-vol

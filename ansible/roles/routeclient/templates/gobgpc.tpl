@@ -1,8 +1,6 @@
-  GNU nano 3.2                                                                       ansible/roles/routeclient/templates/gobgpc.tpl                                                                                 
-
 [global.config]
   as = 64512
-  router-id = "10{{ansible_eno1.ipv4.address[3:]}}" ## Router client IP address
+  router-id = "{{ansible_eno2.ipv4.address}}" ## Router client IP address
 
 [[neighbors]]
   [neighbors.config]
@@ -29,7 +27,7 @@
      passive-mode = true
   [neighbors.route-reflector.config]
      route-reflector-client = true
-     route-reflector-cluster-id = "10{{ansible_eno1.ipv4.address[3:]}}" ## Router client IP address
+     route-reflector-cluster-id = "{{ansible_eno2.ipv4.address}}" ## Router client IP address
   [[neighbors.afi-safis]]
   [neighbors.afi-safis.config]
       afi-safi-name = "l2vpn-evpn"
