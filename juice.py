@@ -362,6 +362,22 @@ def generate_own_inventory(roles, directory, inventory):
                   except KeyError:
                           return 'Number out of range'
 
+  def sorted_roles(roles, tag):
+    list_roles = [k.to_dict()['address'] for k in roles[tag]]
+    size = len(list_roles)
+    for i in range(size):
+      for j in range(size):
+        first_elem = int((list_roles[i].split('-')[1]).split('.')[0])
+        second_elem = int((list_roles[j].split('-')[1]).split('.')[0])
+
+        if first_elem < second_elem:
+          temp = list_roles[i]
+          list_roles[i] = list_roles[j]
+          list_roles[j] = temp
+
+    return list_roles
+
+
   # Retrieve the hosts granted in the reservation from OAR_NODE_FILE
 
   retrieve_hosts_list = roles
@@ -371,46 +387,49 @@ def generate_own_inventory(roles, directory, inventory):
   client_index = 0
   rtt_initial = 1000
 
+  sorted_role_list = {}
+  sorted_role_list['openstack'] = sorted_roles(roles, "openstack")
+  sorted_role_list['routereflector'] = sorted_roles(roles, "routereflector")
+  sorted_role_list['routeclient'] = sorted_roles(roles, "routeclient")
+  sorted_role_list['modules'] = sorted_roles(roles, "modules")
+  print(sorted_role_list)
+
   # Write into the ansible hosts file to deploy the roles
   host_file = open(inventory,"w+")
   host_file.write("#[openstack]\n")
 
-
-  print(roles['openstack'][0].to_dict())
-  print(len(roles['openstack']))
-
-  for i in range(len(roles['openstack'])):
-          host = roles['openstack'][i].to_dict()
+  for i in range(len(sorted_role_list['openstack'])):
+          host = sorted_role_list['openstack'][i]
           rtt_for_neutron = str(rtt_initial) + "," + str(rtt_initial+1000-1)
-          host_file.write("#Region" + str(n2w(i+1)) + " ansible_host=" + host['address'] + " regionName=Region" + str(n2w(i+1)) + " rttLabels=" + rtt_for_neutron + "\n")
+          host_file.write("#Region" + str(n2w(i+1)) + " ansible_host=" + host + " regionName=Region" + str(n2w(i+1)) + " rttLabels=" + rtt_for_neutron + "\n")
           rtt_initial=rtt_initial + 1000
 
   host_file.write("\n[routereflector]\n")
-  for i in range(len(roles['routereflector'])):
-          host = roles['routereflector'][i].to_dict()
-          host_file.write("RouterR" + str(n2w(i+1)) + " ansible_host=" + host['address'] + " routerName=RouterR" + str(n2w(i+1)) + " clients=" + str(client_index) + "\n")
+  for i in range(len(sorted_role_list['routereflector'])):
+          host = sorted_role_list['routereflector'][i]
+          host_file.write("RouterR" + str(n2w(i+1)) + " ansible_host=" + host + " routerName=RouterR" + str(n2w(i+1)) + " clients=" + str(client_index) + "\n")
           client_index = client_index + 2
 
   host_file.write("\n[routeclient]\n")
   for i in range(len(roles['routeclient'])):
-          host = roles['routeclient'][i].to_dict()
-          host_file.write("RouterC" + str(n2w(i+1))+" ansible_host=" + host['address'] + " routerName=RouterC" + str(n2w(i+1)) + " regionName=Region" + str(n2w(i+1)) + " reflector=" + str(reflector_index)+"\n")
+          host = sorted_role_list['routeclient'][i]
+          host_file.write("RouterC" + str(n2w(i+1))+" ansible_host=" + host + " routerName=RouterC" + str(n2w(i+1)) + " regionName=Region" + str(n2w(i+1)) + " reflector=" + str(reflector_index)+"\n")
           if ((i+1) % 2 == 0):
                   reflector_index = reflector_index + 1
 
   host_file.write("\n[routers]\n")
-  for i in range(len(roles['routereflector'])):
-          host = roles['routereflector'][i].to_dict()
-          host_file.write("Router"+str(n2w(i+1))+" ansible_host=" + host['address'] + " routerName=Router"+str(n2w(i+1))+"\n")
-  for i in range(len(roles['routeclient'])):
-          host = roles['routeclient'][i].to_dict()
-          host_file.write("Router"+str(n2w(i+len(roles['routereflector'])))+" ansible_host=" + host['address'] + " routerName=Router"+str(n2w(i+len(roles['routereflector'])))+"\n")
+  for i in range(len(sorted_role_list['routereflector'])):
+          host = sorted_role_list['routereflector'][i]
+          host_file.write("Router"+str(n2w(i+1))+" ansible_host=" + host + " routerName=Router"+str(n2w(i+1))+"\n")
+  for i in range(len(sorted_role_list['routeclient'])):
+          host = sorted_role_list['routeclient'][i]
+          host_file.write("Router"+str(n2w(i+len(sorted_role_list['routereflector'])))+" ansible_host=" + host + " routerName=Router"+str(n2w(i+len(sorted_role_list['routereflector'])))+"\n")
 
   host_file.close()
 
   # Select the first keystone node master from the list
-  first_master = roles['openstack'][0]
-  master_ip = subprocess.check_output("ssh root@" + first_master['address'] + " ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6-" ,shell=True).decode('UTF-8')[0:-1]
+  first_master = sorted_role_list['openstack'][0]
+  master_ip = subprocess.check_output("ssh root@" + first_master + " ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6-" ,shell=True).decode('UTF-8')[0:-1]
 
   # Update the files where the keystone master IP node is called
   replace_ip = subprocess.check_output("sed -i 's/keystone_ip_node:.*/keystone_ip_node: '"+ master_ip +"'/g' " + directory + "/ansible/group_vars/all.yml ", shell=True)

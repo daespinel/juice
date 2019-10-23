@@ -27,6 +27,11 @@
     dest: /opt/stack/intersite/config/services.config
   become: true
 
+- name: Stop the DIMINET daemon (just in case)
+  shell: systemctl stop intersite
+  become: true
+  ignore_errors: true
+
 - name: Copy the systemd unit service file for DIMINET daemon
   template:
     src: intersite-service.tpl
@@ -34,10 +39,16 @@
   become: true
 
 - name: Reload daemons
-  shell: systemctl daemon-reload     
+  shell: systemctl daemon-reload
   become: true
 
-- name: Start DIMINET daemon 
+- name: Create database for DIMINET
+  shell: python3 build_database.py
+  args:
+    chdir: /opt/stack/intersite/
+  become: true
+
+- name: Start DIMINET daemon
   shell: systemctl restart intersite
   become: true
 

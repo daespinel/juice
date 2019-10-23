@@ -3,6 +3,20 @@
   apt: 
     name: openvswitch-switch
   become: true
+ 
+- name: Fixing the problem with pip2.7 part I
+  shell: wget https://bootstrap.pypa.io/get-pip.py
+  ignore_errors: true
+  args: 
+    chdir: /opt/stack/
+  become: true
+
+- name: Fixing the problem with pip2.7 part II
+  shell: python2.7 get-pip.py
+  ignore_errors: true
+  args: 
+    chdir: /opt/stack/
+  become: true
 
 - name: Check the IP address of the machines
   register: ip_eno1
@@ -32,16 +46,6 @@
     depth: 1
   become: true
   become_user: stack
-
-- name: Unstack action
-  shell: /opt/stack/devstack/unstack.sh &> /tmp/unstack-logs
-  args:
-    executable: /bin/bash
-  become: true
-  become_user: stack
-  register: result
-  until: result is succeeded
-  retries: 1
 
 - name: Download Neutron Interconnections
   git:
@@ -127,6 +131,20 @@
   async: 2000
   poll: 30
   when: regionName != 'RegionOne'
+
+- name: Copy the bash file to patch endpoints
+  template:
+    src: endpoints.sh.tpl
+    dest: /opt/stack/devstack/endpoints.sh
+    owner: stack
+  become: true
+
+- name: Patch the endpoint list for other regions
+  shell: source openrc admin demo & sh endpoints.sh
+  args:
+    chdir: /opt/stack/devstack/
+  become: true
+  when: regionName == 'RegionOne'
 
 - name: Create a directory for neutron python client openstack client
   file:
