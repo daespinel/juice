@@ -172,7 +172,6 @@
 - name: Restart Devstack deployment
   shell: systemctl restart devstack@*
   become: true
-  become_user: stack
   
 
 

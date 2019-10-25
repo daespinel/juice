@@ -1,40 +1,47 @@
 ---
 - name: Gather facts from hosts
   hosts: all
+  remote_user: root
   gather_facts: true
 
 - name: Doing common tasks
   hosts: routers, openstack
+  remote_user: root
   roles:
    - { role: common,
        tags: common }
 
 - name: Deploying route reflectors
   hosts: routereflector
+  remote_user: root
   roles:
     - { role: routereflector,
         tags: routereflector }
 
 - name: Deploying route clients
   hosts: routeclient
+  remote_user: root
   roles:
     - { role: routeclient,
         tags: routeclient }
 
 - name: Deploying openstack
   hosts: openstack
+  remote_user: root
   roles:
     - { role: openstack,
         tags: openstack }
 
 - name: Starting all routers
   hosts: routers
+  remote_user: root
   roles:
     - { role: routers,
         tags: routers }
 
 - name: Starting DIMINET modules
   hosts: modules
+  remote_user: root
   roles:
     - { role: modules,
         tags: modules }
