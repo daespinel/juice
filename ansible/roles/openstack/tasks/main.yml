@@ -47,6 +47,16 @@
   become: true
   become_user: stack
 
+- name: Unstack action
+  shell: /opt/stack/devstack/unstack.sh &> /tmp/unstack-logs
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: stack
+  register: result
+  until: result is succeeded
+  retries: 1
+
 - name: Download Neutron Interconnections
   git:
     dest: /opt/stack/interco
@@ -132,7 +142,6 @@
   poll: 30
   when: regionName != 'RegionOne'
 
-
 - name: Download Neutron python-neutronclient
   git:
     dest: /opt/stack/python-neutronclient
@@ -143,6 +152,19 @@
     depth: 1
   become: true
   become_user: stack
+
+- name: Install some Packages
+  apt:
+    name: "{{ packages }}"
+  become: true
+  register: installation
+  until: installation is succeeded
+  retries: 30
+  vars:
+    packages:
+      - git
+      - python-pip
+      - python3-pip
 
 - name: Uninstall former python-neutronclient pip package for python2
   pip:

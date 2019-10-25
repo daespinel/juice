@@ -35,8 +35,7 @@ import operator
 import pickle
 
 from docopt import docopt
-from enoslib.api import (generate_inventory, emulate_network,
-                         validate_network)
+from enoslib.api import generate_inventory
 from enoslib.task import enostask, _save_env
 from enoslib.infra.enos_g5k.provider import G5k
 from enoslib.infra.enos_g5k.configuration import Configuration, NetworkConfiguration
@@ -113,8 +112,7 @@ Options:
     if 'provide' in tags:
         if provider == 'g5k':
             env['provider'] = 'g5k'
-            updated_env = g5k_deploy(config['g5k'], env=xp_name,
-                                     force_deploy=force_deployment)
+            updated_env = g5k_deploy(config, env=xp_name, force_deploy=force_deployment)
             env.update(updated_env)
         else:
             raise Exception(
@@ -126,17 +124,12 @@ Options:
         generate_own_inventory(env['roles'] , env['cwd'],
                            env['inventory'])
         _save_env(env)
-        print(env_['inventory'])
+        #print(env_['inventory'])
 
 
     # Deploy the resources, requires both g5k and inventory executions
     if 'scaffold' in tags:
-        run_ansible('tasks.yml', extra_vars={
-            'registry':    config['registry'],
-            'db':          env['db'],
-            'monitoring':  env['monitoring'],
-            'enos_action': 'deploy'
-            })
+        run_ansible('tasks.yml')
 
 @doc()
 @enostask()
@@ -286,7 +279,7 @@ Emulate network using: {0}
     inventory = env["inventory"]
     roles = env["roles"]
     logging.info("Emulates using constraints: %s" % tc)
-    emulate_network(roles, inventory, tc)
+    #emulate_network(roles, inventory, tc)
     env["latency"] = tc['constraints'][0]['delay']
 
 
@@ -300,7 +293,7 @@ Validate network. Doesn't work for now since there is no flent installed
     """
     inventory = env["inventory"]
     roles = env["roles"]
-    validate_network(roles, inventory)
+    #validate_network(roles, inventory)
 
 
 @doc(SYMLINK_NAME)
@@ -396,12 +389,12 @@ def generate_own_inventory(roles, directory, inventory):
 
   # Write into the ansible hosts file to deploy the roles
   host_file = open(inventory,"w+")
-  host_file.write("#[openstack]\n")
+  host_file.write("[openstack]\n")
 
   for i in range(len(sorted_role_list['openstack'])):
           host = sorted_role_list['openstack'][i]
           rtt_for_neutron = str(rtt_initial) + "," + str(rtt_initial+1000-1)
-          host_file.write("#Region" + str(n2w(i+1)) + " ansible_host=" + host + " regionName=Region" + str(n2w(i+1)) + " rttLabels=" + rtt_for_neutron + "\n")
+          host_file.write("Region" + str(n2w(i+1)) + " ansible_host=" + host + " regionName=Region" + str(n2w(i+1)) + " rttLabels=" + rtt_for_neutron + "\n")
           rtt_initial=rtt_initial + 1000
 
   host_file.write("\n[routereflector]\n")
@@ -424,6 +417,11 @@ def generate_own_inventory(roles, directory, inventory):
   for i in range(len(sorted_role_list['routeclient'])):
           host = sorted_role_list['routeclient'][i]
           host_file.write("Router"+str(n2w(i+len(sorted_role_list['routereflector'])))+" ansible_host=" + host + " routerName=Router"+str(n2w(i+len(sorted_role_list['routereflector'])))+"\n")
+
+  host_file.write("\n[modules]\n")
+  for i in range(len(sorted_role_list['modules'])):
+          host = sorted_role_list['modules'][i]
+          host_file.write("Region"+str(n2w(i+1))+" ansible_host=" + host + " regionName=" + "Region"+str(n2w(i+1))  + "\n")
 
   host_file.close()
 

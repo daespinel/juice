@@ -75,11 +75,11 @@ def run_ansible(playbook, extra_vars=None, tags=None,
 from enoslib.infra.enos_g5k.provider import G5k
 
 @enostask(new=True)
-def g5k_deploy(g5k_config, env=None, force_deploy=False, **kwargs):
+def g5k_deploy(g5k_config, env=None, force_deployment=False, **kwargs):
     provider = G5k(g5k_config)
     roles, networks = provider.init(force_deploy=force_deploy)
     with play_on(roles=roles, gather_facts=False) as t:
-                t.raw("apt-get update && apt-get install python")
+                t.raw("apt-get update && apt-get install -y python")
 #                t.raw("test -f /var/lib/dpkg/lock-fronted &&  rm /var/lib/dpkg/lock-frontend || echo 'Not file'")
 #                t.raw("test -f /var/lib/apt/lists/lock &&  rm /var/lib/apt/lists/lock || echo 'Not file'")
 #                t.raw("test -f /var/cache/apt/archives/lock &&  rm /var/cache/apt/archives/lock || echo 'Not file'")
@@ -87,5 +87,4 @@ def g5k_deploy(g5k_config, env=None, force_deploy=False, **kwargs):
     #wait_ssh(roles)
     env['roles'] = roles
     env['networks'] = networks
-    logging.info('Wait 30 seconds for iface to be ready...')
     return env
