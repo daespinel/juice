@@ -132,25 +132,6 @@
   poll: 30
   when: regionName != 'RegionOne'
 
-- name: Copy the bash file to patch endpoints
-  template:
-    src: endpoints.sh.tpl
-    dest: /opt/stack/devstack/endpoints.sh
-    owner: stack
-  become: true
-
-- name: Patch the endpoint list for other regions
-  shell: source openrc admin demo & sh endpoints.sh
-  args:
-    chdir: /opt/stack/devstack/
-  become: true
-  when: regionName == 'RegionOne'
-
-- name: Create a directory for neutron python client openstack client
-  file:
-    path: /usr/local/lib/python2.7/dist-packages/neutronclient/osc/v2/neutron_interconnection
-    state: directory
-    mode: '0755'
 
 - name: Download Neutron python-neutronclient
   git:
@@ -188,6 +169,11 @@
   args:
     chdir: /opt/stack/python-neutronclient/
 
+- name: Restart Devstack deployment
+  shell: systemctl restart devstack@*
+  become: true
+  become_user: stack
+  
 
 
 ### pip delete the old neutronclient client package, that's the fucking problem!!!

@@ -13,6 +13,8 @@ g5k:
   resources:
     machines:
       - roles:
+          - chrony
+          - rally
           - routeclient
           - modules
           - openstack
@@ -22,11 +24,19 @@ g5k:
         primary_network: n1
         secondary_networks: []
       - roles:
+          - chrony
+          - rally
           - routereflector
         cluster: paravance
         nodes: 3
         primary_network: n1
         secondary_networks: []
+      - roles:
+          - control
+        cluster: paravance
+        nodes: 1
+        primary_network:
+        seconday_network: []
     networks:
       - id: n1
         roles:
