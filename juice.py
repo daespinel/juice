@@ -129,7 +129,8 @@ Options:
 
     # Deploy the resources, requires both g5k and inventory executions
     if 'scaffold' in tags:
-        run_ansible('tasks.yml')
+        extra_vars = {'monitoring': env['monitoring']}
+        run_ansible('tasks.yml', extra_vars)
 
 @doc()
 @enostask()

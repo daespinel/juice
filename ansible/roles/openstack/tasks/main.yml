@@ -47,6 +47,11 @@
   become: true
   become_user: stack
 
+- name: pip install rally
+  pip:
+    name: rally==2.0.0
+  become: true
+
 - name: Unstack action
   shell: /opt/stack/devstack/unstack.sh &> /tmp/unstack-logs
   args:
@@ -57,23 +62,23 @@
   until: result is succeeded
   retries: 1
 
-- name: Download Neutron Interconnections
-  git:
-    dest: /opt/stack/interco
-    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git"
-    version: master
-    force: yes
-    update: no
-    depth: 1
-  become: true
-  become_user: stack
+#- name: Download Neutron Interconnections
+#  git:
+#    dest: /opt/stack/interco
+#    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git"
+#    version: master
+#    force: yes
+#    update: no
+#    depth: 1
+#  become: true
+#  become_user: stack
 
-- name: Installing the Interconnections Service plugin
-  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
-  ignore_errors: true
-  args: 
-    chdir: /opt/stack/interco/
-  become: true
+#- name: Installing the Interconnections Service plugin
+#  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
+#  ignore_errors: true
+#  args: 
+#    chdir: /opt/stack/interco/
+#  become: true
 
 - name: Create the devstack local.conf
   template:
@@ -112,6 +117,15 @@
   become: true
   become_user: stack
 
+- name: Create heat etc folder
+  shell: mkdir /etc/heat/
+  become: true
+  ignore_errors: true
+
+- name: Give permissions to the folder
+  shell: chmod 777 -R /etc/heat/
+  become:true
+
 - name: Follow Devstack deployment
   debug:
     msg: 
@@ -145,8 +159,8 @@
 - name: Download Neutron python-neutronclient
   git:
     dest: /opt/stack/python-neutronclient
-    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/python-neutronclient.git"
-    version: neutron-interconnection
+    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/python-neutronclient-1.git"
+    version: stable/stein
     force: yes
     update: no
     depth: 1
@@ -195,6 +209,9 @@
   shell: systemctl restart devstack@*
   become: true
   
+#- name: Install rally-openstack
+#  pip:
+#    name: rally-openstack
 
 
 ### pip delete the old neutronclient client package, that's the fucking problem!!!

@@ -33,7 +33,7 @@
   ignore_errors: true
 
 - name: Change mod to 777
-  shell: chmod -R 777 /opt/stack/intersite
+  shell: chmod 777 -R /opt/stack/intersite/
   become: true
 
 - name: Copy the systemd unit service file for DIMINET daemon

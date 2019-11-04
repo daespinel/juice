@@ -1,5 +1,6 @@
 [[local|localrc]]
 FORCE=yes
+USE_PYTHON3=true
 
 HOST_IP={{ansible_eno1.ipv4.address}}
 REGION_NAME={{ regionName }}
@@ -23,19 +24,13 @@ ADMIN_PASSWORD=secret
 
 enable_plugin networking-bgpvpn https://git.openstack.org/openstack/networking-bgpvpn.git stable/stein
 enable_plugin networking-bagpipe https://git.openstack.org/openstack/networking-bagpipe.git stable/stein
-## Need to change contraints and requirements https://opendev.org/openstack/networking-odl/commit/48f9f5782149cb0b04b71806d414330c1a3c4709
-## delete line 29 of /usr/local/lib/python2.7/dist-packages/networking_sfc/db/flowclassifier_db.py where query is used
-## delete line 32 of /usr/local/lib/python2.7/dist-packages/networking_sfc/db/sfc_db.py
-## delete line 19 of /usr/local/lib/python2.7/dist-packages/networking_sfc/services/sfc/drivers/ovs/db.py
-## sudo apt-get install openvswitch-switch
-## Create a br-mpls bridge
-
 enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git
 enable_plugin rally https://github.com/openstack/rally
+enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
 
 NETWORKING_BGPVPN_DRIVER="BGPVPN:BaGPipe:networking_bgpvpn.neutron.services.service_drivers.bagpipe.bagpipe_v2.BaGPipeBGPVPNDriver:default"
 
-
+enable_service h-eng h-api h-api-cfn h-api-cw
 enable_service b-bgp
 #BAGPIPE_DATAPLANE_DRIVER_IPVPN=ovs
 BAGPIPE_DATAPLANE_DRIVER_EVPN=ovs
@@ -68,11 +63,17 @@ region_name = {{ regionName }}
 router_driver = bgpvpn
 network_l3_driver = bgpvpn
 network_l2_driver = bgpvpn
-bgpvpn_rtnn = {{ rttLabels }}
+bgpvpn_rtnn = {{rttLabels}}
 username = neutron
 password = secret
 project = service
+check_state_interval = 5
 
+[[post-config|$NOVA_CONF]]
+
+[glance]
+api_servers = http://{{ansible_eno1.ipv4.address}}/image
+region_name = {{ regionName}}
 
 
 
