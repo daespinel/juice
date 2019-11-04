@@ -5,8 +5,8 @@ from keystoneauth1 import session
 from keystoneclient.v3 import client as keystoneclient
 
 FIRST_REGION_NAME = "RegionOne"
-#KEYSTONE_ENDPOINT = "http://{{keystone_ip_node}}/identity/v3"
-KEYSTONE_ENDPOINT = "http://192.168.57.6/identity/v3"
+KEYSTONE_ENDPOINT = "http://{{ keystone_ip_node }}/identity/v3"
+#KEYSTONE_ENDPOINT = "http://192.168.57.6/identity/v3"
 
 
 def get_session_object(auth_param):

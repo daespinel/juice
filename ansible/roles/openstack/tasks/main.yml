@@ -191,6 +191,15 @@
   args:
     chdir: /opt/stack/python-neutronclient/
 
+- name: Adding additional data to neutron db min
+  blockinfile:
+    path: /opt/stack/neutron/neutron/db/common_db_mixin.py
+    block:  |
+          @staticmethod
+          def _filter_non_model_columns(data, model):
+            return db_utils.filter_non_model_columns(data, model)
+  become: true
+
 - name: Restart Devstack deployment
   shell: systemctl restart devstack@*
   become: true

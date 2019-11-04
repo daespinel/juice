@@ -38,7 +38,7 @@
 
 - name: Copy the systemd unit service file for DIMINET daemon
   template:
-    src: intersite-service.tpl
+    src: intersite.service.tpl
     dest: /etc/systemd/system/intersite.service
   become: true
 
