@@ -38,6 +38,7 @@ from docopt import docopt
 from enoslib.api import generate_inventory
 from enoslib.task import enostask, _save_env
 from enoslib.infra.enos_g5k.provider import G5k
+from enoslib.service import Monitoring
 from enoslib.infra.enos_g5k.configuration import Configuration, NetworkConfiguration
 from utils import (JUICE_PATH, ANSIBLE_PATH, SYMLINK_NAME, doc,
                    doc_lookup, run_ansible, g5k_deploy)
@@ -124,13 +125,17 @@ Options:
         generate_own_inventory(env['roles'] , env['cwd'],
                            env['inventory'])
         _save_env(env)
-        #print(env_['inventory'])
+#        print(env_['inventory'])
+#        m = Monitoring(collector=env['roles']['openstack'],
+#               agent=env['roles']['openstack'],
+#               ui=env['roles']['openstack'])
+#        m.deploy()
 
 
     # Deploy the resources, requires both g5k and inventory executions
     if 'scaffold' in tags:
         extra_vars = {'monitoring': env['monitoring']}
-        run_ansible('tasks.yml', extra_vars)
+        run_ansible('tasks.yml')
 
 @doc()
 @enostask()

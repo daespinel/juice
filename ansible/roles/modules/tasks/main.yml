@@ -57,7 +57,7 @@
   shell: systemctl restart intersite
   become: true
 
-- name: Copy the bash file to patch endpoints
+- name: Copy the python file to patch endpoints
   template:
     src: endpoints.py.tpl
     dest: /opt/stack/devstack/endpoints.py

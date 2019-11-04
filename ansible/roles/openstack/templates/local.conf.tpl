@@ -1,6 +1,6 @@
 [[local|localrc]]
 FORCE=yes
-USE_PYTHON3=true
+#USE_PYTHON3=true
 
 HOST_IP={{ansible_eno1.ipv4.address}}
 REGION_NAME={{ regionName }}
@@ -26,11 +26,11 @@ enable_plugin networking-bgpvpn https://git.openstack.org/openstack/networking-b
 enable_plugin networking-bagpipe https://git.openstack.org/openstack/networking-bagpipe.git stable/stein
 enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git
 enable_plugin rally https://github.com/openstack/rally
-enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
+#enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
 
 NETWORKING_BGPVPN_DRIVER="BGPVPN:BaGPipe:networking_bgpvpn.neutron.services.service_drivers.bagpipe.bagpipe_v2.BaGPipeBGPVPNDriver:default"
 
-enable_service h-eng h-api h-api-cfn h-api-cw
+#enable_service h-eng h-api h-api-cfn h-api-cw
 enable_service b-bgp
 #BAGPIPE_DATAPLANE_DRIVER_IPVPN=ovs
 BAGPIPE_DATAPLANE_DRIVER_EVPN=ovs
@@ -43,7 +43,7 @@ disable_service cinder
 disable_service etcd3
 disable_service dstat
 disable_service n-net
-disable_service heat
+#disable_service heat
 
 # Enable l2population for vxlan network
 [[post-config|/$Q_PLUGIN_CONF_FILE]]
@@ -63,7 +63,7 @@ region_name = {{ regionName }}
 router_driver = bgpvpn
 network_l3_driver = bgpvpn
 network_l2_driver = bgpvpn
-bgpvpn_rtnn = {{rttLabels}}
+bgpvpn_rtnn = {{rttLabels|string}}
 username = neutron
 password = secret
 project = service

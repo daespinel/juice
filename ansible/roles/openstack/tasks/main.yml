@@ -4,20 +4,6 @@
     name: openvswitch-switch
   become: true
  
-- name: Fixing the problem with pip2.7 part I
-  shell: wget https://bootstrap.pypa.io/get-pip.py
-  ignore_errors: true
-  args: 
-    chdir: /opt/stack/
-  become: true
-
-- name: Fixing the problem with pip2.7 part II
-  shell: python2.7 get-pip.py
-  ignore_errors: true
-  args: 
-    chdir: /opt/stack/
-  become: true
-
 - name: Check the IP address of the machines
   register: ip_eno1
   shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
@@ -62,23 +48,19 @@
   until: result is succeeded
   retries: 1
 
-#- name: Download Neutron Interconnections
-#  git:
-#    dest: /opt/stack/interco
-#    repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git"
-#    version: master
-#    force: yes
-#    update: no
-#    depth: 1
-#  become: true
-#  become_user: stack
+- name: Fixing the problem with pip2.7 part I
+  shell: wget https://bootstrap.pypa.io/get-pip.py
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/
+  become: true
 
-#- name: Installing the Interconnections Service plugin
-#  shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
-#  ignore_errors: true
-#  args: 
-#    chdir: /opt/stack/interco/
-#  become: true
+- name: Fixing the problem with pip2.7 part II
+  shell: python2.7 get-pip.py
+  ignore_errors: true
+  args:
+    chdir: /opt/stack/
+  become: true
 
 - name: Create the devstack local.conf
   template:
@@ -87,6 +69,11 @@
     owner: stack
   become: true
   become_user: stack
+
+- name: pip install rally
+  pip:
+    name: rally==2.0.0
+  become: true
 
 - name: Adding the br-mpls bridge
   shell: ovs-vsctl add-br br-mpls
@@ -139,8 +126,7 @@
   become: true
   become_user: stack
   register: result
-  until: result is succeeded
-  retries: 1
+  ignore_errors: false
   when: regionName == 'RegionOne'
 
 - name: Run parallel Devstack
@@ -208,28 +194,3 @@
 - name: Restart Devstack deployment
   shell: systemctl restart devstack@*
   become: true
-  
-#- name: Install rally-openstack
-#  pip:
-#    name: rally-openstack
-
-
-### pip delete the old neutronclient client package, that's the fucking problem!!!
-
-
-## Will need to do git pull the python-client library and then do python setup.py install to see if it works
-
-#- name: Copy the modified neutron-client folder to the deployment
-#  copy:
-#    src: templates/python-neutronclient
-#    dest: /usr/local/lib/python2.7/dist-packages/
-#    force: yes
-#  become: true
-
-# Problem with nano /usr/local/lib/python2.7/dist-packages/neutron_lib/api/definitions/interconnection.py, the valid states are not defined
-
-#- name: Upgrade Neutron heads
-#  shell: neutron-db-manage --subproject neutron-interconnection upgrade heads
-#  become: true
-#  become_user: stack
-#  ignore_errors: false

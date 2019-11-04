@@ -75,7 +75,7 @@ def run_ansible(playbook, extra_vars=None, tags=None,
 from enoslib.infra.enos_g5k.provider import G5k
 
 @enostask(new=True)
-def g5k_deploy(g5k_config, env=None, force_deployment=False, **kwargs):
+def g5k_deploy(g5k_config, env=None, force_deploy=False, **kwargs):
     provider = G5k(g5k_config)
     roles, networks = provider.init(force_deploy=force_deploy)
     with play_on(roles=roles, gather_facts=False) as t:
