@@ -25,7 +25,7 @@ ADMIN_PASSWORD=secret
 enable_plugin networking-bgpvpn https://git.openstack.org/openstack/networking-bgpvpn.git stable/stein
 enable_plugin networking-bagpipe https://git.openstack.org/openstack/networking-bagpipe.git stable/stein
 enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git
-enable_plugin rally https://github.com/openstack/rally
+enable_plugin rally https://github.com/openstack/rally-openstack
 #enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
 
 NETWORKING_BGPVPN_DRIVER="BGPVPN:BaGPipe:networking_bgpvpn.neutron.services.service_drivers.bagpipe.bagpipe_v2.BaGPipeBGPVPNDriver:default"

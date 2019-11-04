@@ -111,7 +111,7 @@
 
 - name: Give permissions to the folder
   shell: chmod 777 -R /etc/heat/
-  become:true
+  become: true
 
 - name: Follow Devstack deployment
   debug:

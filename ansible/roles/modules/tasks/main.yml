@@ -51,7 +51,7 @@
   args:
     chdir: /opt/stack/intersite/
   become: true
-  bacome_user: stack
+  become_user: stack
 
 - name: Start DIMINET daemon
   shell: systemctl restart intersite
