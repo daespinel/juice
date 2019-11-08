@@ -194,7 +194,7 @@
 - name: Adding additional data to neutron db min
   blockinfile:
     path: /opt/stack/neutron/neutron/db/common_db_mixin.py
-    block:  |
+    block:  |4
           @staticmethod
           def _filter_non_model_columns(data, model):
             return db_utils.filter_non_model_columns(data, model)
@@ -203,3 +203,18 @@
 - name: Restart Devstack deployment
   shell: systemctl restart devstack@*
   become: true
+
+- name: Copy Heat template to create the networks and subnetworks
+  template:
+    src: heat.hot.tpl
+    dest: /opt/stack/devstack/heat.hot
+    owner: stack
+  become: true
+
+- name: Start heat creation of resources
+  shell: source openrc admin demo && openstack stack create -t hot.heat experiment-stack
+  args:
+    chdir: /opt/stack/devstack/
+  become: true
+  become_user: stack
+
