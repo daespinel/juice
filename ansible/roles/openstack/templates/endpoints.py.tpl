@@ -81,3 +81,14 @@ for region in region_name_list:
         print("Can not create the endpoint")
 
 
+new_endpoint_object['interface']='admin'
+
+for region in region_name_list:
+    new_endpoint_object['region'] = region
+
+    try:
+        key_client.endpoints.create(
+            new_endpoint_object['service'], new_endpoint_object['url'], new_endpoint_object['interface'], new_endpoint_object['region'])
+
+    except:
+        print("Can not create the endpoint")

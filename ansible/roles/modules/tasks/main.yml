@@ -56,19 +56,3 @@
 - name: Start DIMINET daemon
   shell: systemctl restart intersite
   become: true
-
-- name: Copy the python file to patch endpoints
-  template:
-    src: endpoints.py.tpl
-    dest: /opt/stack/devstack/endpoints.py
-    owner: stack
-  become: true
-  when: regionName == 'RegionOne'
-
-- name: Patch the endpoint list for other regions
-  shell: python3 endpoints.py
-  args:
-    chdir: /opt/stack/devstack/
-  become: true
-  when: regionName == 'RegionOne'
-
