@@ -212,7 +212,7 @@
   become: true
 
 - name: Start heat creation of resources
-  shell: source openrc admin demo && openstack stack create -t heat.hot experiment-stack
+  shell: . openrc admin demo && openstack stack create -t heat.hot experiment-stack
   args:
     chdir: /opt/stack/devstack/
   become: true
