@@ -1,20 +1,19 @@
 # One of cockroachdb, mariadb, galera
-database: cockroachdb
+# database: cockroachdb
 
 # Should we deployed the monitoring stack?
 monitoring: "yes"
 
-g5k:
   # reservation: "2018-03-12 19:00:01"
-  walltime: "05:30:00"
+
+g5k:
+  walltime: "8:00:00"
   dhcp: true
   job_name: DIMINET-tests
   env_name: ubuntu1804-x64-min
   resources:
     machines:
       - roles:
-          - chrony
-          - rally
           - routeclient
           - modules
           - openstack
@@ -22,21 +21,13 @@ g5k:
         cluster: paravance
         nodes: 6
         primary_network: n1
-        secondary_networks: []
+        secondary_networks: [n2]
       - roles:
-          - chrony
-          - rally
           - routereflector
         cluster: paravance
         nodes: 3
-        primary_network: n1
+        primary_network: n2
         secondary_networks: []
-      - roles:
-          - control
-        cluster: paravance
-        nodes: 1
-        primary_network:
-        seconday_network: []
     networks:
       - id: n1
         roles:
@@ -45,18 +36,19 @@ g5k:
         site: rennes
       - id: n2
         roles:
-          - database_network
+          - routes_network
         type: kavlan
         site: rennes
 
 
-registry:
-  type: internal
-  ceph: True
-  ceph_id: discovery
-  ceph_keyring: /home/discovery/.ceph/ceph.client.discovery.keyring
-  ceph_mon_host:
-    - ceph0.rennes.grid5000.fr
-    - ceph1.rennes.grid5000.fr
-    - ceph2.rennes.grid5000.fr
-  ceph_rbd: discovery_kolla_registry/datas
+#registry:
+#  type: internal
+#  ceph: True
+#  ceph_id: discovery
+#  ceph_keyring: /home/discovery/.ceph/ceph.client.discovery.keyring
+#  ceph_mon_host:
+#    - ceph0.rennes.grid5000.fr
+#    - ceph1.rennes.grid5000.fr
+#    - ceph2.rennes.grid5000.fr
+#  ceph_rbd: discovery_kolla_registry/datas
+
