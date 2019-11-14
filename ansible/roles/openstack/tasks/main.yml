@@ -211,26 +211,3 @@
     owner: stack
   become: true
 
-- name: Copy the python file to patch endpoints
-  template:
-    src: endpoints.py.tpl
-    dest: /opt/stack/devstack/endpoints.py
-    owner: stack
-  become: true
-  when: regionName == 'RegionOne'
-
-- name: Patch the endpoint list for other regions
-  shell: python3 endpoints.py
-  args:
-    chdir: /opt/stack/devstack/
-  become: true
-  when: regionName == 'RegionOne'
-
-- name: Start heat creation of resources
-  shell: source /opt/stack/devstack/openrc admin demo && openstack stack create -t /opt/stack/devstack/heat.hot experiment-stack
-  args:
-    chdir: /opt/stack/devstack/
-    executable: /bin/bash
-  become: true
-  become_user: stack
-
