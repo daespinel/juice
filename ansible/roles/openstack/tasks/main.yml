@@ -75,6 +75,100 @@
     name: rally==2.0.0
   become: true
 
+- name: Create folder for local OpenStack repository
+  shell: mkdir tmp
+  become: true
+  args:
+    chdir: /opt/
+  ignore_errors: true
+
+- name: Give permissions to the folder
+  shell: chmod 777 -R /opt/tmp
+  become: true
+
+- name: Download glance from front-end
+  synchronize:
+    src: /home/daespinel/public/glance
+    dest: /opt/tmp/
+  become: true
+
+- name: Download heat from front-end
+  synchronize:
+    src: /home/daespinel/public/heat
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download horizon from front-end
+  synchronize:
+    src: /home/daespinel/public/horizon
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download keystone from front-end
+  synchronize:
+    src: /home/daespinel/public/keystone
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download networking-bagpipe from front-end
+  synchronize:
+    src: /home/daespinel/public/networking-bagpipe
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download networking-bgpvpn from front-end
+  synchronize:
+    src: /home/daespinel/public/networking-bgpvpn
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download neutron from front-end
+  synchronize:
+    src: /home/daespinel/public/neutron
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download noVNC from front-end
+  synchronize:
+    src: /home/daespinel/public/noVNC
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download placement from front-end
+  synchronize:
+    src: /home/daespinel/public/placement
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download rally from front-end
+  synchronize:
+    src: /home/daespinel/public/rally
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download requirements from front-end
+  synchronize:
+    src: /home/daespinel/public/requirements
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
+- name: Download nova from front-end
+  synchronize:
+    src: /home/daespinel/public/nova
+    dest: /opt/tmp/
+  become: true
+  become_user: stack
+
 - name: Adding the br-mpls bridge
   shell: ovs-vsctl add-br br-mpls
   become: true
@@ -200,6 +294,19 @@
                 return db_utils.filter_non_model_columns(data, model)
   become: true
 
+- name: Register the rttns values
+  shell: "cat /etc/neutron/neutron.conf | grep bgp_rtnn | grep -oP '\\[\\K[^\\]]+'"
+  register: rtnns
+  become: true
+
+- name: Fixing the bgp rtnn issue
+    lineinfile:
+      dest: /etc/neutron/neutron.conf
+      regexp: 'bgp_rtnn = \[(.+), (.+)\]'
+      line: 'bgp_rtnn = {{rtnns.stdout}}'
+      backrefs: yes
+  become: true
+
 - name: Restart Devstack deployment
   shell: systemctl restart devstack@*
   become: true
@@ -210,4 +317,3 @@
     dest: /opt/stack/devstack/heat.hot
     owner: stack
   become: true
-

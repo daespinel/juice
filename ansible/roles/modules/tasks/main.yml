@@ -6,11 +6,17 @@
   git:
     dest: /opt/stack/intersite           
     repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/intersite.git"
-    version: master                 
+    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69                 
     force: yes
     update: no
     depth: 1
   become: true
+
+- name: Fix the requirements of the olf version
+  template:
+    src: requirements.txt.tpl
+    dest: /opt/stack/intersite/requirements.txt
+  become: true 
 
 - name: Install the DIMINET pip requirements
   pip:
@@ -79,4 +85,20 @@
     executable: /bin/bash
   become: true
   become_user: stack
+  ignore_errors: true
 
+- name: Unzip the python-client for DIMINET module
+  shell: unzip python-client-generated.zip
+  args:
+    chdir: /opt/stack/intersite/
+  become: true
+  become: stack
+  ignore_errors: true
+
+
+- name: Install the python-client for DIMINET
+  shell: python3 setup.py install
+  args: 
+    chdir: /opt/stack/intersite/python-client/
+  become: true
+  ignore_errors: true
