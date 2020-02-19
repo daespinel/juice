@@ -295,15 +295,15 @@
   become: true
 
 - name: Register the rttns values
-  shell: "cat /etc/neutron/neutron.conf | grep bgp_rtnn | grep -oP '\\[\\K[^\\]]+'"
+  shell: "cat /etc/neutron/neutron.conf | grep bgpvpn_rtnn | grep -oP '\\[\\K[^\\]]+'"
   register: rtnns
   become: true
 
 - name: Fixing the bgp rtnn issue
     lineinfile:
       dest: /etc/neutron/neutron.conf
-      regexp: 'bgp_rtnn = \[(.+), (.+)\]'
-      line: 'bgp_rtnn = {{rtnns.stdout}}'
+      regexp: 'bgpvpn_rtnn = \[(.+), (.+)\]'
+      line: 'bgpvpn_rtnn = {{rtnns.stdout}}'
       backrefs: yes
   become: true
 
