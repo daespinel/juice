@@ -386,7 +386,7 @@ resources:
   private_subnet35:
     type: OS::Neutron::Subnet
     properties:
-      network_id: { get_resource: private_net3( }
+      network_id: { get_resource: private_net35 }
       cidr: 10.0.34.0/24
 
   private_net36:

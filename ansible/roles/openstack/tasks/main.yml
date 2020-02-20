@@ -300,11 +300,11 @@
   become: true
 
 - name: Fixing the bgp rtnn issue
-    lineinfile:
-      dest: /etc/neutron/neutron.conf
-      regexp: 'bgpvpn_rtnn = \[(.+), (.+)\]'
-      line: 'bgpvpn_rtnn = {{rtnns.stdout}}'
-      backrefs: yes
+  lineinfile:
+    dest: /etc/neutron/neutron.conf
+    regexp: 'bgpvpn_rtnn = \[(.+), (.+)\]'
+    line: 'bgpvpn_rtnn = {{rtnns.stdout}}'
+    backrefs: yes
   become: true
 
 - name: Restart Devstack deployment
