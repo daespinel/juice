@@ -6,7 +6,8 @@
   git:
     dest: /opt/stack/intersite           
     repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/intersite.git"
-    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69                 
+#    version: 82261c2da014482746a76b0a2cc897ee67c992a1 #L3 version
+    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69
     force: yes
     update: no
     depth: 1
@@ -102,3 +103,49 @@
     chdir: /opt/stack/intersite/python-client/
   become: true
   ignore_errors: true
+
+- name: Create results dir in first DIMINET instance
+  shell: mkdir results
+  args:
+    chdir: /opt/stack/intersite/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Do a pause to let the system finish the final API calls
+  pause:
+    minutes: 2
+
+- name: Copy a more actual test file
+  template:
+    src: test.py.tpl
+    dest: /opt/stack/intersite/test.py
+  become: true
+
+
+- name: Run multiple DIMINET test from the first instance
+  shell: python3 test.py -s 2,3,4,5,6,7,8,9,10,11,12,13,14
+  args:
+    chdir: /opt/stack/intersite/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Register result files to copy
+  shell: ls
+  args:
+    chdir: /opt/stack/intersite/results/
+  become: true
+  register: files_to_copy
+  when: regionName == 'RegionOne'
+
+- name: Copy the result to the front-end
+  fetch:
+    src: /opt/stack/intersite/results/{{item}}
+    dest: /home/daespinel/juice/results/
+    mode: 0777
+  become: true
+  with_items: "{{files_to_copy.stdout_lines}}"
+  when: regionName == 'RegionOne'
