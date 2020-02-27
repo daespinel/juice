@@ -6,14 +6,15 @@
   git:
     dest: /opt/stack/intersite           
     repo: "https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/intersite.git"
+    version: master
 #    version: 82261c2da014482746a76b0a2cc897ee67c992a1 #L3 version
-    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69
+#    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69
     force: yes
     update: no
     depth: 1
   become: true
 
-- name: Fix the requirements of the olf version
+- name: Fix the requirements of the old version
   template:
     src: requirements.txt.tpl
     dest: /opt/stack/intersite/requirements.txt
@@ -144,7 +145,7 @@
 - name: Copy the result to the front-end
   fetch:
     src: /opt/stack/intersite/results/{{item}}
-    dest: /home/daespinel/juice/results/
+    dest: /home/daespinel/juice/results2/
     mode: 0777
   become: true
   with_items: "{{files_to_copy.stdout_lines}}"
