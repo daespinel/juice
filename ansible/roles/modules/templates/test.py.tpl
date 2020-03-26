@@ -95,8 +95,8 @@ def main(argv):
 
     #print(cidrs_region_network_information)
 
-    test_type1 = "L4"
-    test_type2 = "L2"
+    test_type1 = "L3"
+    test_type2 = "L4"
     
     test_sizes_temps = (opts[0][1])
     test_sizes = test_sizes_temps.split(',')
