@@ -172,7 +172,7 @@ def main(argv):
                 print(keys)
 
                 service.resources = resources
-
+                api_response = ''
                 #start = time.clock()
                 start = time.time()
                 try:
