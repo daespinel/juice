@@ -100,7 +100,7 @@ def main(argv):
     
     test_sizes_temps = (opts[0][1])
     test_sizes = test_sizes_temps.split(',')
-    test_number = 1
+    test_number = 100
     configuration = Configuration()
 
     for elem in test_sizes:
