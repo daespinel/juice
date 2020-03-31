@@ -253,7 +253,7 @@ def main(argv):
                 print(keys)
 
                 service.resources = resources
-                api_responde = ""
+                api_response = ""
                 start = time.time()
                 try:
                     # Horizontal request to create an inter-site Service POST
