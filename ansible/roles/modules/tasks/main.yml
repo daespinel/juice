@@ -73,6 +73,7 @@
   args:
     chdir: /opt/stack/devstack/
   become: true
+  become_user: stack
   when: regionName == 'RegionOne'
 
 - name: Start heat creation of resources for the first service test (L3)
