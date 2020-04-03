@@ -10,7 +10,7 @@
 #    version: 82261c2da014482746a76b0a2cc897ee67c992a1 #L3 version
 #    version: 5fcab41dc14d2432404255c2f3b90248cfcf2f69 #L2 version
     force: yes
-    update: no
+    update: yes
     depth: 1
   become: true
 
@@ -145,7 +145,7 @@
 
 - name: Copy the result to the front-end
   fetch:
-    src: /opt/stack/intersite/results/{{item}}
+    src: /opt/stack/intersite/tests/results/{{item}}
     dest: /home/daespinel/juice/test_results/results_march_26/
     mode: 0777
   become: true
