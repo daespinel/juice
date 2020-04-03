@@ -4,6 +4,8 @@ FORCE=yes
 
 NOVA_REPO=/opt/tmp/nova/.git
 NOVA_BRANCH=stable/stein
+NOVNC_REPO=/opt/tmp/noVNC/.git
+NOVNC_BRANCH=master
 NEUTRON_REPO=/opt/tmp/neutron/.git
 NEUTRON_BRANCH=stable/stein
 GLANCE_REPO=/opt/tmp/glance/.git
