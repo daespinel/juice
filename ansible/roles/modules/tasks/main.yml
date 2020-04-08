@@ -119,8 +119,8 @@
     dest: /opt/stack/intersite/tests/test.py
   become: true
 
-- name: Run multiple DIMINET test from the first instance
-  shell: python3 test.py -s 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+- name: Run multiple DIMINET test from the first instance - From 2 to 8
+  shell: python3 test.py -s 2,3,4,5,6,7,8
   args:
     chdir: /opt/stack/intersite/tests/
   become: true
@@ -129,11 +129,55 @@
   when: regionName == 'RegionOne'
 
 - name: Copy the intersite log
-  shell: journalctl -u intersite >> log-intersite.txt
+  shell: journalctl -u intersite >> log-intersite_2-8.txt
   args:
     chdir: /opt/stack/intersite/tests/results/
   become: true
   when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell:  journalctl --rotate && journalctl --vacuum-time=1sec 
+  become: true
+
+- name: Run multiple DIMINET test from the first instance - From 9 to 13
+  shell: python3 test.py -s 9,10,11,12,13
+  args:
+    chdir: /opt/stack/intersite/tests/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Copy the intersite log
+  shell: journalctl -u intersite >> log-intersite_9-13.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell: journalctl --rotate && journalctl --vacuum-time=1sec
+  become: true
+
+- name: Run multiple DIMINET test from the first instance - From 14 to 17
+  shell: python3 test.py -s 14,15,16,17
+  args:
+    chdir: /opt/stack/intersite/tests/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Copy the intersite log
+  shell: journalctl -u intersite >> log-intersite_14-17.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell: journalctl --rotate && journalctl --vacuum-time=1sec
+  become: true
 
 - name: Register result files to copy
   shell: ls
@@ -146,8 +190,9 @@
 - name: Copy the result to the front-end
   fetch:
     src: /opt/stack/intersite/tests/results/{{item}}
-    dest: /home/daespinel/juice/test_results/results_march_26/
+    dest: /home/daespinel/juice/test_results/results_/
     mode: 0777
   become: true
   with_items: "{{files_to_copy.stdout_lines}}"
   when: regionName == 'RegionOne'
+
