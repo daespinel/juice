@@ -60,13 +60,12 @@
   shell: systemctl restart intersite
   become: true
 
-- name: Copy the python file to patch endpoints
+- name: Copy the python file to patch endpoints in every deployment
   template:
     src: endpoints.py.tpl
     dest: /opt/stack/devstack/endpoints.py
     owner: stack
   become: true
-  when: regionName == 'RegionOne'
 
 - name: Patch the endpoint list for other regions
   shell: python3 endpoints.py
@@ -74,9 +73,8 @@
     chdir: /opt/stack/devstack/
   become: true
   become_user: stack
-  when: regionName == 'RegionOne'
 
-- name: Start heat creation of resources for the first service test (L3)
+- name: Start heat creation of resources for the first service test
   shell: source /opt/stack/devstack/openrc admin demo && openstack stack create -t /opt/stack/devstack/heat.hot experiment-stack1
   args:
     chdir: /opt/stack/devstack/

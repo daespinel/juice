@@ -190,6 +190,14 @@
   become: true
   become_user: stack
 
+- name: Copy the in-deployment created list of openstack hosts
+  template:
+    src: os_list.txt.tpl
+    dest: /opt/stack/
+    owner: stack
+  become: true
+  become_user: stack
+
 - name: Modify neutron stack script to add new file for neutron-lib neutron-legacy
   template:
     src: neutron-legacy.tpl
@@ -213,17 +221,7 @@
       - "Follow deployment with: "
       - "ssh -l root {{ip_eno1.stdout}} tail -f /tmp/stack-logs"
 
-- name: Run First Devstack
-  shell: /opt/stack/devstack/stack.sh &> /tmp/stack-logs
-  args:
-    executable: /bin/bash
-  become: true
-  become_user: stack
-  register: result
-  ignore_errors: false
-  when: regionName == 'RegionOne'
-
-- name: Run parallel Devstack
+- name: Run parallel Devstack installations
   shell: /opt/stack/devstack/stack.sh &> /tmp/stack-logs
   args:
     executable: /bin/bash
@@ -233,8 +231,7 @@
   until: result is succeeded
   retries: 1
   async: 2000
-  poll: 30
-  when: regionName != 'RegionOne'
+  poll: 40
 
 - name: Download Neutron python-neutronclient
   git:

@@ -23,11 +23,7 @@ REQUIREMENTS_BRANCH=stable/stein
 
 HOST_IP={{ansible_eno1.ipv4.address}}
 REGION_NAME={{ regionName }}
-{% if regionName != 'RegionOne' %}
-KEYSTONE_SERVICE_HOST={{ keystone_ip_node}}
-KEYSTONE_AUTH_HOST={{ keystone_ip_node}}
-KEYSTONE_REGION_NAME=RegionOne
-{% endif %}
+KEYSTONE_REGION_NAME={{ regionName }}
 NEUTRON_CREATE_INITIAL_NETWORKS=False
 
 LOGFILE=/opt/stack/logs/stack.sh.log
