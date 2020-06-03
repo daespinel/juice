@@ -432,10 +432,12 @@ def generate_own_inventory(roles, directory, inventory):
   host_file.close()
 
   # SSH with every host in order to take the IP address and save it for future keystone endpoints patching
-  for openstack_instance in sorted_role_list['openstack']:
-    master_ip = subprocess.check_output("ssh root@" + openstack_instance + " ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6-" ,shell=True).decode('UTF-8')[0:-1]
+
+for i in range(len(sorted_role_list['openstack'])):
+    host = sorted_role_list['routereflector'][i]
+    master_ip = subprocess.check_output("ssh root@" + host + " ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6-" ,shell=True).decode('UTF-8')[0:-1]
     # Update the files where the keystone data is being saved
-    new_ip = subprocess.check_output("echo '"+ openstack_instance +":" + master_ip + "' >>" + directory + "/ansible/roles/openstack/templates/os_list.txt.tpl ", shell=True)
+    new_ip = subprocess.check_output("echo '"+ str(n2w(i+1)) +":" + master_ip + "' >>" + directory + "/ansible/roles/openstack/templates/os_list.txt ", shell=True)
     # replace_auth = subprocess.check_output("sed -i 's/OS_AUTH_URL:.*/OS_AUTH_URL: '"+ master_ip +"'/g' " + directory  + "/ansible/group_vars/all.yml ", shell=True)
 
 

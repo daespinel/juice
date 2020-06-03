@@ -193,7 +193,7 @@
 - name: Copy the in-deployment created list of openstack hosts
   template:
     src: os_list.txt.tpl
-    dest: /opt/stack/
+    dest: /opt/stack/os_list.txt
     owner: stack
   become: true
   become_user: stack
