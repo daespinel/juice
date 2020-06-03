@@ -63,14 +63,21 @@
 - name: Copy the python file to patch endpoints in every deployment
   template:
     src: endpoints.py.tpl
-    dest: /opt/stack/devstack/endpoints.py
+    dest: /opt/stack/intersite/endpoints.py
     owner: stack
   become: true
+
+- name: Adding the python path for the endpoint patching
+  shell: export PYTHONPATH=$(pwd)
+  args:
+    chdir: /opt/stack/intersite/
+  become: true
+  become_user: stack
 
 - name: Patch the endpoint list for other regions
   shell: python3 endpoints.py
   args:
-    chdir: /opt/stack/devstack/
+    chdir: /opt/stack/intersite/
   become: true
   become_user: stack
 
