@@ -67,22 +67,26 @@ new_endpoint_object = {
 }
 
 
-with open("/opt/stack/os_list.txt") as file:
+with open("/opt/stack/os_list.txt") as file_os:
 #with open("os_list.txt") as file_os:
     region_name_list = []
     line = file_os.readline()
     while line:
-        region_name, region_ip = line.split(":", 2)
+        region_name.strip(), region_ip.strip() = line.split(":", 2)
+        #print(line.split(":", 2))
         if region_name != local_region_name:
             try:
+                endpoint_url = 'http://' + region_ip.strip() + '/identity/v3'
+                #print(endpoint_url)
                 key_client.endpoints.create(
-                keystone_service_id, 'http://' + region_ip + '/identity/v3', 'public', region_name)
+                keystone_service_id, endpoint_url, 'public', region_name)
             except:
                 print("Can not create the endpoint")
 
             try:
+                neutron_url = 'http://' + region_ip.strip() + ':9696'
                 key_client.endpoints.create(
-                neutron_service_id, 'http://' + region_ip + ':9696', 'public', region_name)
+                neutron_service_id, neutron_url, 'public', region_name)
             except:
                 print("Can not create the endpoint")
         
