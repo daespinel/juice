@@ -52,24 +52,53 @@ def main(argv):
     catalog_endpoints = auth_ref.service_catalog.catalog
     #print("Service catalog: %s" % catalog_endpoints)
 
-    regions_list = []
+    regions_list_neu = []
     regions_list_key = []
+    regions_list = []
 
     for obj in catalog_endpoints:
+        
         if obj['name'] == 'neutron':
             for endpoint in obj['endpoints']:
-                obj = {'region_name' : endpoint["region"], 'url' : endpoint["url"]}
-                regions_list.append(obj)
+                #print(endpoint)
+                new_endpoint_obj = {'region_name' : endpoint["region"], 'neutron_url' : endpoint["url"]}
+                regions_list_neu.append(new_endpoint_obj)
+
+        if obj['name'] == 'keystone':
+            for endpoint in obj['endpoints']:
+                if endpoint['interface'] == 'public':
+                    new_endpoint_obj = {'region_name' : endpoint["region"], 'keystone_url' : endpoint["url"]}
+                    regions_list_key.append(new_endpoint_obj)
+                    #print(endpoint)
+
+    print(regions_list_neu)
+    print(regions_list_key)
+
+    for i in range(len(regions_list_neu)):
+        neutron_endpoint = regions_list_neu[i]
+        print(neutron_endpoint)
+        for j in range(len(regions_list_key)):
+            keystone_endpoint = regions_list_key[j]
+            print(keystone_endpoint)
+            if neutron_endpoint['region_name'] == keystone_endpoint['region_name']:
+                new_end = {'region_name' : neutron_endpoint['region_name'], 'keystone_url' : keystone_endpoint['keystone_url'], 'neutron_url':neutron_endpoint['neutron_url']}
+                regions_list.append(new_end)
 
     print(regions_list)
 
-    cidrs_region_network_information = {'10.0.0.0/24': [], '10.0.1.0/24': [], '10.0.2.0/24': [], '10.0.3.0/24': [], '10.0.4.0/24': [], '10.0.5.0/24': [], '10.0.6.0/24': [], '10.0.7.0/24': [], '10.0.8.0/24': [], '10.0.9.0/24': [], '10.0.10.0/24': [], '10.0.11.0/24': [], '10.0.12.0/24': [], '10.0.13.0/24': [], '10.0.14.0/24': [], '10.0.15.0/24': [], '10.0.16.0/24': [], '10.0.17.0/24': [], '10.0.18.0/24': [], '10.0.19.0/24': [], '10.0.20.0/24': [], '10.0.21.0/24': [], '10.0.22.0/24': [], '10.0.23.0/24': [], '10.0.24.0/24': [], '10.0.25.0/24': [], '10.0.26.0/24': [], '10.0.27.0/24': [], '10.0.28.0/24': [], '10.0.29.0/24': [], '10.0.30.0/24': [], '10.0.31.0/24': [], '10.0.32.0/24': [], '10.0.33.0/24': [], '10.0.34.0/24': [], '10.0.35.0/24': [], '10.0.36.0/24': [], '10.0.37.0/24': [], '10.0.38.0/24': [], '10.0.39.0/24': [], '10.0.40.0/24': [], '10.0.41.0/24': [], '10.0.42.0/24': [], '10.0.43.0/24': [], '10.0.44.0/24': [], '10.0.45.0/24': [], '10.0.46.0/24': [], '10.0.47.0/24': [], '10.0.48.0/24': []}
-
-    #cidrs_region_network_information = {'10.0.0.0/24': [], '20.0.0.0/24': []}
+    #cidrs_region_network_information = {'10.0.0.0/24': [], '10.0.1.0/24': [], '10.0.2.0/24': [], '10.0.3.0/24': [], '10.0.4.0/24': [], '10.0.5.0/24': [], '10.0.6.0/24': [], '10.0.7.0/24': [], '10.0.8.0/24': [], '10.0.9.0/24': [], '10.0.10.0/24': [], '10.0.11.0/24': [], '10.0.12.0/24': [], '10.0.13.0/24': [], '10.0.14.0/24': [], '10.0.15.0/24': [], '10.0.16.0/24': [], '10.0.17.0/24': [], '10.0.18.0/24': [], '10.0.19.0/24': [], '10.0.20.0/24': [], '10.0.21.0/24': [], '10.0.22.0/24': [], '10.0.23.0/24': [], '10.0.24.0/24': [], '10.0.25.0/24': [], '10.0.26.0/24': [], '10.0.27.0/24': [], '10.0.28.0/24': [], '10.0.29.0/24': [], '10.0.30.0/24': [], '10.0.31.0/24': [], '10.0.32.0/24': [], '10.0.33.0/24': [], '10.0.34.0/24': [], '10.0.35.0/24': [], '10.0.36.0/24': [], '10.0.37.0/24': [], '10.0.38.0/24': [], '10.0.39.0/24': [], '10.0.40.0/24': [], '10.0.41.0/24': [], '10.0.42.0/24': [], '10.0.43.0/24': [], '10.0.44.0/24': [], '10.0.45.0/24': [], '10.0.46.0/24': [], '10.0.47.0/24': [], '10.0.48.0/24': []}
+    cidrs_region_network_information = {'10.0.0.0/24': [], '20.0.0.0/24': []}
 
     # For every region find the networks created with heat
     for i in range(len(regions_list)):
-        region_name, region_endpoint = regions_list[i]['region_name'], regions_list[i]['url']
+        region_name, region_auth_endpoint, region_neutron_endpoint = regions_list[i]['region_name'], regions_list[i]['keystone_url']+'/v3', regions_list[i]['neutron_url']
+        auth = get_auth_object(region_auth_endpoint)
+        sess = get_session_object(auth)
+
+        # Authenticate
+        auth.get_access(sess)
+        auth_ref = auth.auth_ref
+            
         net_adap = Adapter(
             auth=auth,
             session=sess,
@@ -116,7 +145,7 @@ def main(argv):
                 selected_index = randint(1,len(regions_list))
                 host = regions_list[selected_index-1]
                 #print(host['region_name'])
-                configuration.host = host['url'][0:-5] + "7575/api"
+                configuration.host = host['neutron_url'][0:-5] + "7575/api"
                 api_instance = swagger_client.ServicesApi(
                     swagger_client.ApiClient(configuration))
 
@@ -207,7 +236,7 @@ def main(argv):
                 selected_index = randint(1,len(regions_list))
                 host = regions_list[selected_index-1]
                 #print(host['region_name'])
-                configuration.host = host['url'][0:-5] + "7575/api"
+                configuration.host = host['neutron_url'][0:-5] + "7575/api"
                 api_instance = swagger_client.ServicesApi(
                     swagger_client.ApiClient(configuration))
 
@@ -251,7 +280,6 @@ def main(argv):
                 print(i)
                 print(resources)
                 print(regions)
-                print(keys)
 
                 service.resources = resources
                 api_response = ""
