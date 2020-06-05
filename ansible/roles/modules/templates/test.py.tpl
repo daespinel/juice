@@ -94,7 +94,7 @@ def main(argv):
         region_name, region_auth_endpoint, region_neutron_endpoint = regions_list[i]['region_name'], regions_list[i]['keystone_url']+'/v3', regions_list[i]['neutron_url']
         auth = get_auth_object(region_auth_endpoint)
         sess = get_session_object(auth)
-
+        print('Getting information from region ' + str(region_name))
         # Authenticate
         auth.get_access(sess)
         auth_ref = auth.auth_ref
@@ -127,7 +127,7 @@ def main(argv):
 
     test_type1 = "L3"
     test_type2 = "L2"
-    
+    print('starting tests')
     test_sizes_temps = (opts[0][1])
     test_sizes = test_sizes_temps.split(',')
     test_number = 100

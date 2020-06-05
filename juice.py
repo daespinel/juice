@@ -431,8 +431,9 @@ def generate_own_inventory(roles, directory, inventory):
 
   host_file.close()
 
+  # We need to delete the information contained into os_log file
+  clear_file = subprocess.check_output("> " + directory + "/ansible/roles/openstack/templates/os_list.txt.tpl ", shell=True) 
   # SSH with every host in order to take the IP address and save it for future keystone endpoints patching
-
   for i in range(len(sorted_role_list['openstack'])):
     host = sorted_role_list['openstack'][i]
     master_ip = subprocess.check_output("ssh root@" + host + " ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6-" ,shell=True).decode('UTF-8')[0:-1]
