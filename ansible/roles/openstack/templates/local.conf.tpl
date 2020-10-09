@@ -1,6 +1,6 @@
 [[local|localrc]]
 FORCE=yes
-USE_PYTHON3=true
+USE_PYTHON3=True
 SERVICE_TIMEOUT=500
 
 NOVA_REPO=/opt/tmp/nova/.git
