@@ -11,6 +11,12 @@
     path: /usr/bin/python3.6
   become: true
  
+- name: Installing Django
+  pip:
+    executable: pip3
+    name: Django
+    state: absent
+
 - name: Check the IP address of the machines
   register: ip_eno1
   shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 

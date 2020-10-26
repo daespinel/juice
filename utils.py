@@ -79,8 +79,12 @@ def g5k_deploy(g5k_config, env=None, force_deploy=False, **kwargs):
     provider = G5k(g5k_config)
     roles, networks = provider.init(force_deploy=force_deploy)
     with play_on(roles=roles, gather_facts=False) as t:
+<<<<<<< HEAD
                 t.raw("apt-get update && apt-get install -y python && apt-get install -y python3")
 #                 t.raw("apt-get update")
+=======
+                t.raw("apt-get update && apt-get install -y python3 && apt-get install python")
+>>>>>>> 06f68ffd6c6a8a961ae7fbe385d2d17b9fb4c2d0
 #                t.raw("test -f /var/lib/dpkg/lock-fronted &&  rm /var/lib/dpkg/lock-frontend || echo 'Not file'")
 #                t.raw("test -f /var/lib/apt/lists/lock &&  rm /var/lib/apt/lists/lock || echo 'Not file'")
 #                t.raw("test -f /var/cache/apt/archives/lock &&  rm /var/cache/apt/archives/lock || echo 'Not file'")
