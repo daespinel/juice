@@ -4,7 +4,7 @@
 
 [[neighbors]]
   [neighbors.config]
-{% if routerName == 'RouterOne'%}
+{% if routerName == 'RouterROne'%}
      neighbor-address = "{{hostvars['RouterRTwo'].ansible_eno1.ipv4.address}}" # Neighbor router address
 {% else %}
      neighbor-address = "{{hostvars['RouterROne'].ansible_eno1.ipv4.address}}" # Neighbor router address
@@ -26,7 +26,7 @@
 
 [[neighbors]]
   [neighbors.config]
-{% if routerName == 'RouterThree'%}
+{% if routerName == 'RouterRThree'%}
      neighbor-address = "{{hostvars['RouterRTwo'].ansible_eno1.ipv4.address}}" # Neighbor router address
 {% else %}
      neighbor-address = "{{hostvars['RouterRThree'].ansible_eno1.ipv4.address}}" # Neighbor router address

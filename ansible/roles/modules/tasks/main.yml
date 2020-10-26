@@ -20,9 +20,14 @@
     requirements: requirements.txt
   become: true
   ignore_errors: false
-  become_user: stack
   args:
     chdir: /opt/stack/intersite/
+
+- name: Install pyyaml 3.31
+  pip:
+    executable: pip3
+    name: pyyaml==3.13
+  become: true
 
 - name: Copy the file for service.config init
   template:
@@ -160,12 +165,8 @@
   become: true
   when: regionName == 'RegionOne'
 
-- name: Purging the intersite log
-  shell: journalctl --rotate && journalctl --vacuum-time=1sec
-  become: true
-
-- name: Run multiple DIMINET test from the first instance - From 14 to 17
-  shell: python3 test.py -s 14,15,16,17
+- name: Run multiple DIMINET test from the first instance - From 14 to 18
+  shell: python3 test.py -s 14,15,16,17,18
   args:
     chdir: /opt/stack/intersite/tests/
   become: true
@@ -174,7 +175,74 @@
   when: regionName == 'RegionOne'
 
 - name: Copy the intersite log
-  shell: journalctl -u intersite >> log-intersite_14-17.txt
+  shell: journalctl -u intersite >> log-intersite_14-18.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell:  journalctl --rotate && journalctl --vacuum-time=1sec
+  become: true
+
+- name: Run multiple DIMINET test from the first instance - From 19 to 21
+  shell: python3 test.py -s 19,20,21,22,23
+  args:
+    chdir: /opt/stack/intersite/tests/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Copy the intersite log
+  shell: journalctl -u intersite >> log-intersite_19-23.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell:  journalctl --rotate && journalctl --vacuum-time=1sec
+  become: true
+
+- name: Run multiple DIMINET test from the first instance - From 24 to 28
+  shell: python3 test.py -s 24,25,26,27,28
+  args:
+    chdir: /opt/stack/intersite/tests/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Copy the intersite log
+  shell: journalctl -u intersite >> log-intersite_24-28.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Purging the intersite log
+  shell:  journalctl --rotate && journalctl --vacuum-time=1sec
+  become: true
+
+- name: Run multiple DIMINET test from the first instance - From 19 to 21
+  shell: python3 test.py -s 29,30,31,32,33
+  args:
+    chdir: /opt/stack/intersite/tests/
+  become: true
+  become_user: stack
+  ignore_errors: false
+  when: regionName == 'RegionOne'
+
+- name: Copy the intersite log
+  shell: journalctl -u intersite >> log-intersite_29-33.txt
+  args:
+    chdir: /opt/stack/intersite/tests/results/
+  become: true
+  when: regionName == 'RegionOne'
+
+- name: Copy the neutron log
+  shell: journalctl -u devstack@q-svc >> log-neutron_29-33.txt
   args:
     chdir: /opt/stack/intersite/tests/results/
   become: true
@@ -195,7 +263,7 @@
 - name: Copy the result to the front-end
   fetch:
     src: /opt/stack/intersite/tests/results/{{item}}
-    dest: /home/daespinel/juice/test_results/results_/
+    dest: /home/daespinel/juice/test_results/results_october_16/
     mode: 0777
   become: true
   with_items: "{{files_to_copy.stdout_lines}}"

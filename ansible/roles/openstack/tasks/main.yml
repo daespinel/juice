@@ -3,6 +3,13 @@
   apt: 
     name: openvswitch-switch
   become: true
+
+- name: Update python alternative
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python3.6
+  become: true
  
 - name: Check the IP address of the machines
   register: ip_eno1
@@ -32,11 +39,6 @@
     depth: 1
   become: true
   become_user: stack
-
-- name: pip install rally
-  pip:
-    name: rally==2.0.0
-  become: true
 
 - name: Unstack action
   shell: /opt/stack/devstack/unstack.sh &> /tmp/unstack-logs
@@ -69,11 +71,6 @@
     owner: stack
   become: true
   become_user: stack
-
-- name: pip install rally
-  pip:
-    name: rally==2.0.0
-  become: true
 
 - name: Create folder for local OpenStack repository
   shell: mkdir tmp
@@ -261,22 +258,24 @@
   pip:
     name: python-neutronclient
     state: absent
+  become: true
 
 - name: Uninstall former python-neutronclient pip package for python3
   pip:
     executable: pip3
     name: python-neutronclient
     state: absent
+  become: true
 
 - name: Install the new python client
-  shell: python /opt/stack/python-neutronclient/setup.py install
+  shell: python setup.py install
   become: true
   ignore_errors: false
   args:
     chdir: /opt/stack/python-neutronclient/
 
 - name: Install the new python client for python3
-  shell: python3 /opt/stack/python-neutronclient/setup.py install
+  shell: python3 setup.py install
   become: true
   ignore_errors: false
   args:

@@ -1,25 +1,26 @@
 [[local|localrc]]
 FORCE=yes
-#USE_PYTHON3=true
+USE_PYTHON3=True
+SERVICE_TIMEOUT=500
 
 NOVA_REPO=/opt/tmp/nova/.git
-NOVA_BRANCH=stable/stein
+NOVA_BRANCH=stable/ussuri
 NOVNC_REPO=/opt/tmp/noVNC/.git
 NOVNC_BRANCH=master
 NEUTRON_REPO=/opt/tmp/neutron/.git
-NEUTRON_BRANCH=stable/stein
+NEUTRON_BRANCH=stable/ussuri
 GLANCE_REPO=/opt/tmp/glance/.git
-GLANCE_BRANCH=stable/stein
+GLANCE_BRANCH=stable/ussuri
 HEAT_REPO=/opt/tmp/heat/.git
-HEAT_BRANCH=stable/stein
+HEAT_BRANCH=stable/ussuri
 HORIZON_REPO=/opt/tmp/horizon/.git
-HORIZON_BRANCH=stable/stein
+HORIZON_BRANCH=stable/ussuri
 KEYSTONE_REPO=/opt/tmp/keystone/.git
-KEYSTONE_BRANCH=stable/stein
+KEYSTONE_BRANCH=stable/ussuri
 PLACEMENT_REPO=/opt/tmp/placement/.git
-PLACEMENT_BRANCH=stable/stein
+PLACEMENT_BRANCH=stable/ussuri
 REQUIREMENTS_REPO=/opt/tmp/requirements/.git
-REQUIREMENTS_BRANCH=stable/stein
+REQUIREMENTS_BRANCH=stable/ussuri
 
 HOST_IP={{ansible_eno1.ipv4.address}}
 REGION_NAME={{ regionName }}
@@ -38,14 +39,14 @@ SERVICE_PASSWORD=secret
 ADMIN_PASSWORD=secret
 
 #enable_plugin networking-bgpvpn https://git.openstack.org/openstack/networking-bgpvpn.git stable/stein
-enable_plugin networking-bgpvpn /opt/tmp/networking-bgpvpn/.git stable/stein
+enable_plugin networking-bgpvpn /opt/tmp/networking-bgpvpn/.git stable/ussuri
 #enable_plugin networking-bagpipe https://git.openstack.org/openstack/networking-bagpipe.git stable/stein
-enable_plugin networking-bagpipe /opt/tmp/networking-bagpipe/.git stable/stein
-enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git stable/stein
+enable_plugin networking-bagpipe /opt/tmp/networking-bagpipe/.git stable/ussuri
+enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git stable/ussuri
 #enable_plugin rally https://github.com/openstack/rally-openstack
 
 #enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
-enable_plugin heat /opt/tmp/heat/.git stable/stein
+enable_plugin heat /opt/tmp/heat/.git stable/ussuri
 
 NETWORKING_BGPVPN_DRIVER="BGPVPN:BaGPipe:networking_bgpvpn.neutron.services.service_drivers.bagpipe.bagpipe_v2.BaGPipeBGPVPNDriver:default"
 
@@ -62,6 +63,7 @@ disable_service cinder
 disable_service etcd3
 disable_service dstat
 disable_service n-net
+disable_service horizon
 #disable_service heat
 
 # Enable l2population for vxlan network

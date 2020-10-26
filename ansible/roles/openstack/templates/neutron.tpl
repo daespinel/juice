@@ -421,6 +421,8 @@ function install_neutron_new {
     fi
 
     sudo cp /opt/stack/interconnection.py /usr/local/lib/python2.7/dist-packages/neutron_lib/api/definitions/interconnection.py
+    sudo cp /opt/stack/interconnection.py /usr/local/lib/python3.6/dist-packages/neutron_lib/api/definitions/interconnection.py
+    sudo cp /opt/stack/interconnection.py /usr/local/lib/python3.7/dist-packages/neutron_lib/api/definitions/interconnection.py
 
     # L3 service requires radvd
     if is_service_enabled neutron-l3; then

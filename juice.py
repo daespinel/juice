@@ -405,15 +405,17 @@ def generate_own_inventory(roles, directory, inventory):
   for i in range(len(sorted_role_list['routereflector'])):
           host = sorted_role_list['routereflector'][i]
           host_file.write("RouterR" + str(n2w(i+1)) + " ansible_host=" + host + " routerName=RouterR" + str(n2w(i+1)) + " clients=" + str(client_index) + "\n")
-          client_index = client_index + 16
-#          client_index = client_index + 3
+#          client_index = client_index + 16
+          client_index = client_index + 4
+#          client_index = client_index + 7
 
   host_file.write("\n[routeclient]\n")
   for i in range(len(roles['routeclient'])):
           host = sorted_role_list['routeclient'][i]
           host_file.write("RouterC" + str(n2w(i+1))+" ansible_host=" + host + " routerName=RouterC" + str(n2w(i+1)) + " regionName=Region" + str(n2w(i+1)) + " reflector=" + str(reflector_index)+"\n")
-          if ((i+1) % 16 == 0):
-#          if ((i+1) % 3 == 0):
+#          if ((i+1) % 16 == 0):
+          if ((i+1) % 4 == 0):
+#          if ((i+1) % 7 == 0):
                   reflector_index = reflector_index + 1
 
   host_file.write("\n[routers]\n")

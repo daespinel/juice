@@ -451,7 +451,8 @@ function install_mutnauq {
     git_clone $NEUTRON_REPO $NEUTRON_DIR $NEUTRON_BRANCH
     setup_develop $NEUTRON_DIR
 
-    sudo cp /opt/stack/interconnection.py /usr/local/lib/python2.7/dist-packages/neutron_lib/api/definitions/interconnection.py
+    #sudo cp /opt/stack/interconnection.py /usr/local/lib/python2.7/dist-packages/neutron_lib/api/definitions/interconnection.py
+    sudo cp /opt/stack/interconnection.py /usr/local/lib/python3.6/dist-packages/neutron_lib/api/definitions/interconnection.py
 }
 
 # install_neutron_agent_packages() - Collect source and prepare
