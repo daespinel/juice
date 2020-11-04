@@ -45,6 +45,31 @@
   [neighbors.afi-safis.config]
       afi-safi-name = "rtc"
 
+#Loop for clients
+{% for cli in hostvars[groups['routeclient'] if cli.reflector == routerName %}
+[[neighbors]]
+  [neighbors.config]
+     neighbor-address = "{{cli.ansible_eno2.ipv4.address}}" # routeclient address
+     peer-as = 64512
+  [neighbors.transport.config]
+     passive-mode = true
+  [neighbors.route-reflector.config]
+     route-reflector-client = true
+     route-reflector-cluster-id = "{{ip_eno1.stdout}}"
+  [[neighbors.afi-safis]]
+  [neighbors.afi-safis.config]
+      afi-safi-name = "l2vpn-evpn"
+  [[neighbors.afi-safis]]
+  [neighbors.afi-safis.config]
+      afi-safi-name = "l3vpn-ipv4-unicast"
+  [[neighbors.afi-safis]]
+  [neighbors.afi-safis.config]
+      afi-safi-name = "l3vpn-ipv4-flowspec"
+  [[neighbors.afi-safis]]
+  [neighbors.afi-safis.config]
+    afi-safi-name = "rtc"
+
+{% endfor %}
 
 [[neighbors]]
   [neighbors.config]
