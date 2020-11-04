@@ -151,13 +151,6 @@
   become: true
   become_user: stack
 
-- name: Download rally from front-end
-  synchronize:
-    src: /home/daespinel/public/rally
-    dest: /opt/tmp/
-  become: true
-  become_user: stack
-
 - name: Download requirements from front-end
   synchronize:
     src: /home/daespinel/public/requirements

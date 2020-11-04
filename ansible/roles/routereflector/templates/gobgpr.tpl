@@ -46,10 +46,10 @@
       afi-safi-name = "rtc"
 
 #Loop for clients
-{% for cli in hostvars[groups['routeclient']] if cli.reflector == routerName %}
+{% for cli in servers_route_clients if hostvars[cli].reflector == routerName %}
 [[neighbors]]
   [neighbors.config]
-     neighbor-address = "{{cli.ansible_eno2.ipv4.address}}" # routeclient address
+     neighbor-address = "{{hostvars[cli].ansible_eno2.ipv4.address}}" # routeclient address
      peer-as = 64512
   [neighbors.transport.config]
      passive-mode = true
@@ -70,49 +70,3 @@
     afi-safi-name = "rtc"
 
 {% endfor %}
-
-[[neighbors]]
-  [neighbors.config]
-     neighbor-address = "{{hostvars[groups['routeclient'][clients]].ansible_eno2.ipv4.address}}" # First routeclient address
-     peer-as = 64512
-  [neighbors.transport.config]
-     passive-mode = true
-  [neighbors.route-reflector.config]
-     route-reflector-client = true
-     route-reflector-cluster-id = "{{ip_eno1.stdout}}"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l2vpn-evpn"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l3vpn-ipv4-unicast"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l3vpn-ipv4-flowspec"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-    afi-safi-name = "rtc"
-
-
-[[neighbors]]
-  [neighbors.config]
-     neighbor-address = "{{hostvars[groups['routeclient'][clients+1]].ansible_eno2.ipv4.address}}" # Second routeclient address
-     peer-as = 64512
-  [neighbors.transport.config]
-     passive-mode = true
-  [neighbors.route-reflector.config]
-     route-reflector-client = true
-     route-reflector-cluster-id = "{{ip_eno1.stdout}}"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l2vpn-evpn"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l3vpn-ipv4-unicast"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-      afi-safi-name = "l3vpn-ipv4-flowspec"
-  [[neighbors.afi-safis]]
-  [neighbors.afi-safis.config]
-    afi-safi-name = "rtc"
-

@@ -42,7 +42,7 @@ ADMIN_PASSWORD=secret
 enable_plugin networking-bgpvpn /opt/tmp/networking-bgpvpn/.git stable/ussuri
 #enable_plugin networking-bagpipe https://git.openstack.org/openstack/networking-bagpipe.git stable/stein
 enable_plugin networking-bagpipe /opt/tmp/networking-bagpipe/.git stable/ussuri
-enable_plugin neutron-interconnection https://daespinel:MimasTitanBarcoMazda.123@github.com/daespinel/neutron-inter.git stable/ussuri
+enable_plugin neutron-interconnection https://daespinel:82e6902d77f28f7daf4f84cfba71e2d6d00ca37d@github.com/daespinel/neutron-inter.git stable/ussuri
 #enable_plugin rally https://github.com/openstack/rally-openstack
 
 #enable_plugin heat https://git.openstack.org/openstack/heat stable/stein

@@ -4,6 +4,9 @@
   shell: ip a | grep eno1 | grep inet | cut -d/ -f1 | cut -d ' ' -f6- 
   ignore_errors: true
 
+- name: show infos
+  debug: var=servers_route_clients
+
 - name: Add GoBGP config file for route reflectors
   template:
     src: gobgpr.tpl

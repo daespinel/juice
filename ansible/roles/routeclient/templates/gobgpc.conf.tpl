@@ -4,7 +4,7 @@
 
 [[neighbors]]
   [neighbors.config]
-     neighbor-address = "{{hostvars[groups['routereflector'][reflector]].ansible_eno1.ipv4.address}}" ## Route reflector IP address
+     neighbor-address = "{{hostvars[groups['routereflector'][rr_index]].ansible_eno1.ipv4.address}}" ## Route reflector IP address
      peer-as = 64512
 [[neighbors.afi-safis]]
   [neighbors.afi-safis.config]
