@@ -46,7 +46,7 @@
       afi-safi-name = "rtc"
 
 #Loop for clients
-{% for cli in hostvars[groups['routeclient'] if cli.reflector == routerName %}
+{% for cli in hostvars[groups['routeclient']] if cli.reflector == routerName %}
 [[neighbors]]
   [neighbors.config]
      neighbor-address = "{{cli.ansible_eno2.ipv4.address}}" # routeclient address
