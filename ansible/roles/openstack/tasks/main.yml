@@ -214,6 +214,12 @@
   become: true
   ignore_errors: true
 
+- name: Uninstall python3-simplejson package
+  apt:
+    name: python3-simplejson
+    purge: yes
+  become: true
+
 - name: Give permissions to the folder
   shell: chmod 777 -R /etc/heat/
   become: true
@@ -287,14 +293,14 @@
   args:
     chdir: /opt/stack/python-neutronclient/
 
-- name: Adding additional data to neutron db min
-  blockinfile:
-    path: /opt/stack/neutron/neutron/db/common_db_mixin.py
-    block: |4
-            @staticmethod
-            def _filter_non_model_columns(data, model):
-                return db_utils.filter_non_model_columns(data, model)
-  become: true
+#- name: Adding additional data to neutron db min
+#  blockinfile:
+#    path: /opt/stack/neutron/neutron/db/common_db_mixin.py
+#    block: |4
+#            @staticmethod
+#            def _filter_non_model_columns(data, model):
+#                return db_utils.filter_non_model_columns(data, model)
+#  become: true
 
 - name: Register the rttns values
   shell: "cat /etc/neutron/neutron.conf | grep bgpvpn_rtnn | grep -oP '\\[\\K[^\\]]+'"
